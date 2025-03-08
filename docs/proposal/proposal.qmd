@@ -1,0 +1,43 @@
+---
+title: Proposal 
+author:
+  - name: Maximilian Elixhauser
+    corresponding: true
+    email: maximilian.elixhauser@stud.plus.ac.at
+    roles:
+      - Author
+    affiliations:
+      - University of Salzburg
+keywords:
+  - ...
+abstract: |
+  .... ...
+plain-language-summary: |
+  .... ...
+key-points:
+  - .....
+date: last-modified
+bibliography: proposal_ref.bib
+number-sections: true
+format:
+  html:
+    toc: true
+    toc-depth: 3
+---
+
+## Introduction
+
+## Research Question and Objectives
+
+## Technical Approach and Stack 
+
+## Timeline and Milestones
+
+## Expected Outcomes and Added Value
+
+## Conclusion
+
+## References
+
+::: {#refs}
+:::

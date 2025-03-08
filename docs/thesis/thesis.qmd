@@ -1,0 +1,49 @@
+---
+title: Bachelor Thesis
+author:
+  - name: Maximilian Elixhauser
+    corresponding: true
+    email: maximilian.elixhauser@stud.plus.ac.at
+    roles:
+      - Author
+    affiliations:
+      - University of Salzburg
+keywords:
+  - Data
+
+abstract: |
+  ...
+plain-language-summary: |
+  ...
+key-points:
+  - ...
+  - ...
+  - ...
+date: last-modified
+bibliography: thesis_ref.bib
+number-sections: true
+jupyter: python3
+format:
+  pdf:
+    documentclass: scrreprt
+  html:
+    toc: true
+    toc-depth: 3
+---
+
+
+## Introduction
+
+
+## Background
+
+## Data & Methods {#sec-data-methods}
+
+## Conclusion
+
+## Acknowledgements
+
+## References {.unnumbered}
+
+::: {#refs}
+:::

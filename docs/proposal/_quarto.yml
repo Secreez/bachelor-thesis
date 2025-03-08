@@ -1,0 +1,15 @@
+project:
+  type: manuscript
+
+execute:
+  freeze: auto
+
+format:
+  html:
+    toc: true
+    theme: slate
+    comments:
+      hypothesis: true
+
+manuscript:
+  article: proposal.qmd
