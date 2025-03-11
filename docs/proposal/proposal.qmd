@@ -1,5 +1,5 @@
 ---
-title: Report and Proposal
+title: Assessment of the Proposed Hypothesis and Research Approach
 author:
   - name: Maximilian Elixhauser
     corresponding: true
@@ -13,12 +13,7 @@ keywords:
   - COVID-19
   - Excess Mortality
   - SIR Model
-abstract: |
-  .... ...
-plain-language-summary: |
-  .... ...
-key-points:
-  - .....
+  - Report
 date: last-modified
 bibliography: proposal_ref.bib
 number-sections: true
@@ -28,7 +23,7 @@ format:
     toc-depth: 3
 ---
 
-# Evaluation of Proposed Hypothesis and Research Outline
+## Introduction
 
 **COVID-19** is the first pandemic extensively documented through digital flight and mobility tracking, providing an unprecedented opportunity to study how **air travel** drives pathogen spread. Indeed, early analyses demonstrated that aviation can rapidly reduce effective distances between cities, accelerating worldwide transmission [@chinazzi2020; @sun2022]. At the same time, countries exhibited **large variability in excess mortality**, often shaped by **demographic** (e.g., population age, life expectancy) and **economic** (e.g., GDP, healthcare capacity) factors. For instance, [@rahmanian2024] identified government effectiveness, vaccination coverage, and population age structure as key drivers of cross-national differences in pandemic mortality across 21 countries. Similarly, [@matveeva2023] noted that lower GDP per capita and slower vaccination rates were correlated with higher excess mortality among European nations, reflecting a synergistic effect of vaccination coverage and broader healthcare resources on reducing COVID-19–associated deaths.
 
@@ -52,7 +47,7 @@ To test this hypothesis, the proposed approach follows five key steps:
 
 ## Feasibility and Data Coverage Issues
 
-**However, upon closer examination, several feasibility and data coverage challenges arise.** While the original outline provides a structured approach, key limitations emerge regarding **data accessibility, modeling assumptions, and the practical constraints of flight tracking sources.** These factors impact the accuracy of epidemic arrival estimates and necessitate refinements in methodology.  
+**However, upon closer examination, several feasibility and data coverage challenges arise.** While the original outline provides a structured approach, key limitations emerge regarding **data accessibility, modeling assumptions, and the practical constraints of flight tracking sources.** These factors impact the accuracy of epidemic arrival estimates and necessitate refinements in proposed methodology.  
 
 ### Crowdsourced ADS-B: Strengths and Weaknesses 
 
@@ -60,19 +55,23 @@ Multiple studies have leveraged **crowdsourced ADS-B data** for COVID-19 mobilit
 
 > *“OpenSky Network [...] does not provide global coverage and [...] flight data for major global airports such as the Beijing Capital International Airport in China and the Soekarno-Hatta International Airport in Indonesia are not available.”* [@iacus2020]
 
-Such large discrepancies between partial flight samples (@suzumura2020 early 2020 subset) and near-full annual coverage (@strohmeier2021 2019 totals) underscore the network’s highly **uneven** global sensor distribution. While some countries enjoy excellent receiver density, enabling robust analysis, large swaths of Asia and Africa have insufficient coverage. This unevenness must be accounted for in any study that relies on ADS-B data for measuring pandemic-related changes in global air travel.
+Such large discrepancies between partial flight samples (@suzumura2020 early 2020 subset) and near-full annual coverage (@strohmeier2021 2019 totals) underscore the network’s highly **uneven** global sensor distribution. While some countries enjoy excellent receiver density, enabling robust analysis, large swaths of Asia and Africa have insufficient coverage. This unevenness must be accounted for in any study that relies on ADS-B data for measuring pandemic-related changes in global air travel. Alternatives mentioned below may help to mitigate these gaps, either by incorporating proprietary datasets (OAG/IATA), leveraging regional traffic records, or exploring hybrid machine-learning approaches using open data.
 
 ### Proprietary Data and Regional Sources (Check next!)
+
+[HERE explain why FlightRadar24 API isn't feasible, THEN introduce OAG and IATA]
 
 While **comprehensive commercial datasets** such as **OAG** or **IATA** provide near-complete flight schedules and passenger flows, they remain **expensive** and **not openly accessible** [@chinazzi2020]. As a result, researchers often rely on **regional** data sources, for instance **Eurocontrol** (Europe) or **FAA** (US), which—although they can fill certain coverage gaps—rarely yield a truly **global** connectivity picture, and often offer **aggregated** rather than flight-by-flight records.
 
 In epidemiological work, scholars have also merged flight data with **local mobility datasets**. For example, @lai2020 used promising **Baidu** location-based services (LBS) in China to track daily intercity population movements alongside official flight data, concluding that **non-pharmaceutical interventions** (NPIs) like early detection and isolation outweighed the long-term benefits of travel restrictions. However, **Baidu** data remains **inaccessible** for most outside researchers because of licensing and privacy constraints, complicating attempts to replicate or extend such models internationally.
 
-[HERE explain why FlightRadar24 API isn't feasible]
+! [Expand for Eurocontrol and important finding! Extremely promising for European-centric studies]
 
 ### ADS-B Exchange Archives
 
 **ADS-B Exchange** offers **detailed 5-second interval** data globally from March 2020 onward—an improvement in coverage yet still incomplete for mainland China [@salgas2024]. Although this repository enables advanced analyses (e.g., trajectory-level reconstructions), it may not capture critical early-2020 flights from Wuhan, limiting its utility for certain pandemic-related research questions.
+
+[+ Add the pull problem here]
 
 ### A Different Approach: Wikipedia + XGBoost
 
@@ -80,7 +79,7 @@ A novel method proposed by [@salgas2024] illustrates how **Wikipedia-scraped air
 
 However, as @salgas2024 emphasize, building a global flight network by merging **multiple open sources**, then **training** a seat-capacity estimator is **labor-intensive**—involving extensive data cleanup, database validation, and iterative scaling. The authors note that, although the approach achieves near-global coverage, it requires *manually parsing* Wikipedia, reconciling partial radar or administrative records, and repeatedly fine-tuning estimates with regression-based gap-filling—steps that can be “long and complex” to maintain for different years. They further stress that the **dataset’s accuracy is limited** at the **route level** and is primarily intended for **aggregated** analyses at the country or continental scale. As a result, for a **bachelor’s thesis** with limited hours (e.g., ~300), the **full pipeline** of Wikipedia crawling + XGBoost might be **overly ambitious**, especially if combined with an SIR model and mortality correlational work. Still, for researchers needing comprehensive open-data coverage—and willing to handle significant data wrangling—this method remains a **unique** open-source solution for bridging flight-network gaps, which could be adapted to the early-2020 context.
 
-### Seats vs. Actual Passengers
+### Seats vs. Actual Passengers [Check next!]
 
 Because most **open flight datasets** (e.g., OpenSky, ADS-B Exchange) and even official schedules **lack passenger load factors** or manifests, **researchers in the past usually approximated** the number of travelers by **multiplying seat capacity by an assumed occupancy**. 
 
@@ -91,7 +90,7 @@ Pre-pandemic, global passenger load factors (PLF) reached a record 82.6% in 2019
   
 Despite these pitfalls, **seat-capacity $×$ load factor** remains the most feasible approach for open-source aviation data. More-sophisticated methods—such as merging flight data with partial booking stats, mobile-phone location data [@burrieza2022], or route-specific occupancy—are typically unavailable on a global scale. In practice, investigators often cross-validate seat-based estimates against airport traffic counts or official data where possible.
 
-### Are Passengers “Isolated” in Transit?
+### Are Passengers “Isolated” in Transit? How does this affect the model?
 
 In large-scale **SIR** network models @brockmann2013, each flight is simply an **edge** linking an origin to a destination; the hours spent onboard collapse therefore into a brief “travel step” and infected travelers may introduce new cases at their destination.
 
@@ -100,7 +99,7 @@ In large-scale **SIR** network models @brockmann2013, each flight is simply an *
 
 Hence, in a **network contagion** view, flights function as **routes** that let infections jump across distant nodes; whether passengers continue traveling onward or remain in-country is rarely distinguished. While practical, this simplification can overlook nuances such as near-empty flights or onboard restrictions, but remains standard in pandemic models due to data limitations.
 
-## Rationale and Potential Approaches
+## Rationale and Potential Approaches for future Research
 
 ### Regional vs. Global Scope
 
@@ -110,15 +109,23 @@ Owing to open-data limitations, one option is to **narrow** the project scope to
 
 Following [@brockmann2013], a **network-based SIR** model can be used to estimate arrival times for each country/node, treating flight routes as edges along which the infection travels. If direct data on Wuhan flights is lacking, one might approximate initial seeding from other major Asian hubs (e.g., Hong Kong, Seoul, Tokyo) using ADS-B data. The resulting predicted first-case arrivals can be compared against reported seeding events, aligning with studies that highlight the role of population movement in virus transmission [@lai2020].
 
-For a more detailed incubation-lag analysis, one could instead use an SEIR framework, as described by [@abou2020]. This model adds an Exposed (E) compartment for individuals who are infected but not yet infectious. This extra compartment accounts for incubation periods and can yield more realistic dynamics for diseases like COVID-19. However, it also adds complexity—more parameters to estimate and a lengthier calibration process. Given the scope of a bachelor’s thesis, the simpler SIR approach may suffice to derive approximate arrival times, but future work could adopt SEIR for a more detailed incubation-lag analysis.
+For a more detailed incubation-lag analysis, one could instead use an SEIR framework, as described by [@abou2020]. This model adds an Exposed (E) compartment for individuals who are infected but not yet infectious. This extra compartment accounts for incubation periods and can yield more realistic dynamics for diseases like COVID-19. However, it also adds complexity—more parameters to estimate and a lengthier calibration process. Given the scope of my bachelor thesis, the simpler SIR approach may suffice to derive approximate arrival times, but future work could adopt SEIR for a more detailed incubation-lag analysis.
 
 ### Excess Mortality Correlation
 
 Finally, these **arrival-time estimates** can be matched with **excess mortality** and socioeconomic factors—like GDP, median age, vaccination rates, and healthcare quality—to assess whether **early arrival** persists as a significant predictor after accounting for other variables [@sun2022_a; @chinazzi2020]. A **recent short communication** (Neuwirth et al., in preparation) compiles 59 countries’ mortality and demographic data into a single dataset that could serve as the basis for such a correlation analysis. Even a region-specific approach (e.g., Europe-only) can yield valuable insights into the role of arrival timing in national outcomes.
 
-# Refinement of Research Proposal
+# Refinement of Research Design and Methodology
 
-Now after the report, my approach will be ...
+[Not done yet, just a placeholder]
+
+Based on this evaluation, my refined approach will prioritize
+
+- European Centric GMN Construction
+- SIR Model Implementation
+- Weighted Nodes with more Traffic Data (Paris, London, Frankfurt, Amsterdam, Madrid, Rome, etc.)
+- Excess Mortality Correlation for European Countries
+- Use of Data: OpenSky, EUROCONTROL (! Extremely promising, further research ongoing, still need Acception of EUROCONTROL), certain Covid-19 datasets
 
 ## References
 
