@@ -28,23 +28,31 @@ format:
     toc-depth: 3
 ---
 
-## Report
+# Evaluation of Proposed Hypothesis and Research Outline
 
 **COVID-19** is the first pandemic extensively documented through digital flight and mobility tracking, providing an unprecedented opportunity to study how **air travel** drives pathogen spread. Indeed, early analyses demonstrated that aviation can rapidly reduce effective distances between cities, accelerating worldwide transmission [@chinazzi2020; @sun2022]. At the same time, countries exhibited **large variability in excess mortality**, often shaped by **demographic** (e.g., population age, life expectancy) and **economic** (e.g., GDP, healthcare capacity) factors. For instance, [@rahmanian2024] identified government effectiveness, vaccination coverage, and population age structure as key drivers of cross-national differences in pandemic mortality across 21 countries. Similarly, [@matveeva2023] noted that lower GDP per capita and slower vaccination rates were correlated with higher excess mortality among European nations, reflecting a synergistic effect of vaccination coverage and broader healthcare resources on reducing COVID-19–associated deaths.
 
 A less investigated aspect, however, is **epidemic arrival time**: Did countries “hit first” by the virus—when non-pharmaceutical interventions were still immature—face worse overall mortality outcomes? This project aims to explore how early seeding of COVID-19 might have compounded the effects of the aforementioned demographic and economic predictors, ultimately shaping cross-national excess mortality patterns.
 
-### Hypothesis and Motivation
+As outlined in the Z_GIS Thesis Blog by [@neuwirth2024], the **hypothesis** states that **locations hit early and unprepared** faced more severe outbreaks, characterized by:
 
-Based on Dr. Neuwirth’s proposed outline Neuwirth, C. (2024, November 13). Covid-19: Effects of epidemic arrival time on the global 
-variability of excess mortality. Z_GIS Theses Blog, https://zgis-theses.blogspot.com/2024/11/covid-19-effects-of-spatial-propagation.html, the core **hypothesis** is that **early-hit countries** suffered higher cumulative mortality due to **delayed interventions**,s insufficient non-pharmaceutical measures, and extended risk windows (e.g., additional winter waves). To examine this, the plan involves:
+- **Longer durations** without access to vaccination  
+- **Lack of effective non-pharmaceutical interventions (NPIs)** during early waves  
+- **Additional outbreak risks** (e.g., secondary winter waves before vaccination was available)  
 
-1. Constructing a **Global Mobility Network (GMN)** from open flight data (e.g., **OpenSky**, **ADS-B Exchange**) for **early 2020**  
-2. Implementing a **network-based SIR model** [@brockmann2013], seeded in **Wuhan**  
-3. **Simulating outbreak arrival** (arrival ranks) per country  
-4. Comparing these ranks to **real-world** data and correlating them with **excess mortality**
+Accordingly, **early epidemic arrival** is expected to correlate with **higher prevalence, reproduction rates, and excess mortality** at the national level.  
+
+To test this hypothesis, the proposed approach follows five key steps:  
+
+1. **Construct a Global Mobility Network (GMN)** using worldwide air travel data from early 2020 (**OpenSky COVID-19 Flight Dataset and/or FlightRadar24 API**) to represent the situation at the outbreak’s onset.  
+2. **Implement a SIR network simulation model** as presented by [@brockmann2013].  
+3. **Run outbreak simulations** (seeding in Wuhan) to estimate **arrival times (ranks)** of the epidemic in different regions.  
+4. **Validate the model** by comparing simulated epidemic arrival times with reported first-case data.  
+5. **Correlate modeled epidemic arrivals with reported excess mortality**, assessing the impact of arrival timing on overall mortality outcomes.  
 
 ## Feasibility and Data Coverage Issues
+
+**However, upon closer examination, several feasibility and data coverage challenges arise.** While the original outline provides a structured approach, key limitations emerge regarding **data accessibility, modeling assumptions, and the practical constraints of flight tracking sources.** These factors impact the accuracy of epidemic arrival estimates and necessitate refinements in methodology.  
 
 ### Crowdsourced ADS-B: Strengths and Weaknesses 
 
@@ -54,12 +62,13 @@ Multiple studies have leveraged **crowdsourced ADS-B data** for COVID-19 mobilit
 
 Such large discrepancies between partial flight samples (@suzumura2020 early 2020 subset) and near-full annual coverage (@strohmeier2021 2019 totals) underscore the network’s highly **uneven** global sensor distribution. While some countries enjoy excellent receiver density, enabling robust analysis, large swaths of Asia and Africa have insufficient coverage. This unevenness must be accounted for in any study that relies on ADS-B data for measuring pandemic-related changes in global air travel.
 
-
 ### Proprietary Data and Regional Sources (Check next!)
 
 While **comprehensive commercial datasets** such as **OAG** or **IATA** provide near-complete flight schedules and passenger flows, they remain **expensive** and **not openly accessible** [@chinazzi2020]. As a result, researchers often rely on **regional** data sources, for instance **Eurocontrol** (Europe) or **FAA** (US), which—although they can fill certain coverage gaps—rarely yield a truly **global** connectivity picture, and often offer **aggregated** rather than flight-by-flight records.
 
 In epidemiological work, scholars have also merged flight data with **local mobility datasets**. For example, @lai2020 used promising **Baidu** location-based services (LBS) in China to track daily intercity population movements alongside official flight data, concluding that **non-pharmaceutical interventions** (NPIs) like early detection and isolation outweighed the long-term benefits of travel restrictions. However, **Baidu** data remains **inaccessible** for most outside researchers because of licensing and privacy constraints, complicating attempts to replicate or extend such models internationally.
+
+[HERE explain why FlightRadar24 API isn't feasible]
 
 ### ADS-B Exchange Archives
 
@@ -73,12 +82,14 @@ However, as @salgas2024 emphasize, building a global flight network by merging *
 
 ### Seats vs. Actual Passengers
 
-Because most **open flight datasets** (e.g., OpenSky, ADS-B Exchange) and even official schedules **lack passenger load factors** or manifests, **researchers in the past usually approximated** the number of travelers by **multiplying seat capacity by an assumed occupancy**. In the COVID-19 era, many studies relied on **industry estimates** (IATA, ICAO [need to build REPORT REFS here!]) that showed global load factors dropping from about 82% pre-pandemic to as low as 60–65% in 2020. Applying these or similar assumptions can still yield inaccuracies:
+Because most **open flight datasets** (e.g., OpenSky, ADS-B Exchange) and even official schedules **lack passenger load factors** or manifests, **researchers in the past usually approximated** the number of travelers by **multiplying seat capacity by an assumed occupancy**. 
 
-- **Cargo vs. Passenger Flights.** ADS-B data typically do **not** label cargo-only flights, which might appear as “seats.” If not filtered out by airline or aircraft type, cargo operations can be **mistakenly counted** as carrying travelers, inflating estimates [@suzumura2020]. 
+Pre-pandemic, global passenger load factors (PLF) reached a record 82.6% in 2019, according to IATA [@IATA2020]. However, the COVID-19 crisis led to a sharp decline to 65.2% in 2020 [@Statista2024], marking the steepest year-over-year drop in aviation history. Applying these or similar assumptions when estimating passenger flows can still lead to several potential inaccuracies:
+
+- **Cargo vs. Passenger Flights.** ADS-B data typically do **not** label cargo-only flights, which might appear as “seats”. If not filtered out by airline or aircraft type, cargo operations can be **mistakenly counted** as carrying travelers, inflating estimates [@suzumura2020]. 
 - **Reduced Occupancy and Ghost Flights** During COVID-19, many flights operated with extremely low passenger loads (so-called "ghost flights"), often to maintain airport slot rights or for crew recertification [@sun2022_b]. These flights challenge standard seat-capacity methods, as using pre-pandemic load factors could significantly overestimate actual mobility. While industry-wide load factors reflect averages, individual routes often had near-empty flights, complicating large-scale modeling.
   
-Despite these pitfalls, **seat-capacity × load factor** remains the most feasible approach for open-source aviation data. More-sophisticated methods—such as merging flight data with partial booking stats, mobile-phone location data [@burrieza2022], or route-specific occupancy—are typically unavailable on a global scale. In practice, investigators often cross-validate seat-based estimates against airport traffic counts or official data where possible.
+Despite these pitfalls, **seat-capacity $×$ load factor** remains the most feasible approach for open-source aviation data. More-sophisticated methods—such as merging flight data with partial booking stats, mobile-phone location data [@burrieza2022], or route-specific occupancy—are typically unavailable on a global scale. In practice, investigators often cross-validate seat-based estimates against airport traffic counts or official data where possible.
 
 ### Are Passengers “Isolated” in Transit?
 
@@ -105,9 +116,9 @@ For a more detailed incubation-lag analysis, one could instead use an SEIR frame
 
 Finally, these **arrival-time estimates** can be matched with **excess mortality** and socioeconomic factors—like GDP, median age, vaccination rates, and healthcare quality—to assess whether **early arrival** persists as a significant predictor after accounting for other variables [@sun2022_a; @chinazzi2020]. A **recent short communication** (Neuwirth et al., in preparation) compiles 59 countries’ mortality and demographic data into a single dataset that could serve as the basis for such a correlation analysis. Even a region-specific approach (e.g., Europe-only) can yield valuable insights into the role of arrival timing in national outcomes.
 
-## Proposal
+# Refinement of Research Proposal
 
-Now after the report, the proposal ..
+Now after the report, my approach will be ...
 
 ## References
 
