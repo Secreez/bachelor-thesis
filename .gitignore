@@ -1,16 +1,13 @@
 .ipynb_checkpoints
 */.ipynb_checkpoints/*
-
 /.quarto/
 /_manuscript
-
 _freeze/
 docs/proposal/_freeze/
 docs/thesis/_freeze/
 /trackchanges.sty
-
 /.luarc.json
-
 data/*
 .github/*
 .Rproj.user
+*.Rproj
