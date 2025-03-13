@@ -99,6 +99,8 @@ In large-scale **SIR** network models @brockmann2013, each flight is simply an *
 
 Hence, in a **network contagion** view, flights function as **routes** that let infections jump across distant nodes; whether passengers continue traveling onward or remain in-country is rarely distinguished. While practical, this simplification can overlook nuances such as near-empty flights or onboard restrictions, but remains standard in pandemic models due to data limitations.
 
+### What about flights that never took off? [! Check]
+
 ## Rationale and Potential Approaches for future Research
 
 ### Regional vs. Global Scope
