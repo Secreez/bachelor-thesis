@@ -23,9 +23,9 @@ format:
     toc-depth: 3
 ---
 
-## Introduction
+## Introduction [Definetly needs a more catchy start]
 
-**COVID-19** is the first pandemic extensively documented through digital flight and mobility tracking, providing an unprecedented opportunity to study how **air travel** drives pathogen spread. Indeed, early analyses demonstrated that aviation can rapidly reduce effective distances between cities, accelerating worldwide transmission [@chinazzi2020; @sun2022]. At the same time, countries exhibited **large variability in excess mortality**, often shaped by **demographic** (e.g., population age, life expectancy) and **economic** (e.g., GDP, healthcare capacity) factors. For instance, [@rahmanian2024] identified government effectiveness, vaccination coverage, and population age structure as key drivers of cross-national differences in pandemic mortality across 21 countries. Similarly, [@matveeva2023] noted that lower GDP per capita and slower vaccination rates were correlated with higher excess mortality among European nations, reflecting a synergistic effect of vaccination coverage and broader healthcare resources on reducing COVID-19–associated deaths.
+By early 2020, the world was unknowingly connected by an invisible network—one where flights, not borders, dictated the spread of COVID-19. Indeed, early analyses demonstrated that aviation can rapidly reduce effective distances between cities, accelerating worldwide transmission [@chinazzi2020; @sun2022_a]. At the same time, countries exhibited **large variability in excess mortality**, often shaped by **demographic** (e.g., population age, life expectancy) and **economic** (e.g., GDP, healthcare capacity) factors. For instance, [@rahmanian2024] identified government effectiveness, vaccination coverage, and population age structure as key drivers of cross-national differences in pandemic mortality across 21 countries. Similarly, [@matveeva2023] noted that lower GDP per capita and slower vaccination rates were correlated with higher excess mortality among European nations, reflecting a synergistic effect of vaccination coverage and broader healthcare resources on reducing COVID-19–associated deaths.
 
 A less investigated aspect, however, is **epidemic arrival time**: Did countries “hit first” by the virus—when non-pharmaceutical interventions were still immature—face worse overall mortality outcomes? This project aims to explore how early seeding of COVID-19 might have compounded the effects of the aforementioned demographic and economic predictors, ultimately shaping cross-national excess mortality patterns.
 
@@ -37,15 +37,15 @@ As outlined in the Z_GIS Thesis Blog by [@neuwirth2024], the **hypothesis** stat
 
 Accordingly, **early epidemic arrival** is expected to correlate with **higher prevalence, reproduction rates, and excess mortality** at the national level.  
 
-To test this hypothesis, the proposed approach follows five key steps:  
+To test this hypothesis, the proposed approach followed five key steps:  
 
 1. **Construct a Global Mobility Network (GMN)** using worldwide air travel data from early 2020 (**OpenSky COVID-19 Flight Dataset and/or FlightRadar24 API**) to represent the situation at the outbreak’s onset.  
 2. **Implement a SIR network simulation model** as presented by [@brockmann2013].  
 3. **Run outbreak simulations** (seeding in Wuhan) to estimate **arrival times (ranks)** of the epidemic in different regions.  
-4. **Validate the model** by comparing simulated epidemic arrival times with reported first-case data.  
+4. **Validate the model** by comparing simulated epidemic
 5. **Correlate modeled epidemic arrivals with reported excess mortality**, assessing the impact of arrival timing on overall mortality outcomes.  
 
-## Feasibility and Data Coverage Issues
+## Feasibility and Data Coverage Issues [Needs a better Subchapter Structure for Flow]
 
 **However, upon closer examination, several feasibility and data coverage challenges arise.** While the original outline provides a structured approach, key limitations emerge regarding **data accessibility, modeling assumptions, and the practical constraints of flight tracking sources.** These factors impact the accuracy of epidemic arrival estimates and necessitate refinements in proposed methodology.  
 
@@ -128,7 +128,72 @@ Based on this evaluation, my refined approach will prioritize
 - Weighted Nodes with more Traffic Data (Paris, London, Frankfurt, Amsterdam, Madrid, Rome, etc.)
 - Excess Mortality Correlation for European Countries
 - Use of Data: OpenSky, EUROCONTROL (! Extremely promising, further research ongoing, still need Acception of EUROCONTROL), certain Covid-19 datasets
+- Refining the Research Design Section
+- Finalizing the Methods (ODE details, parameter choices, simulation steps) - ODE LaTeX equations ..
+- Clarifying the expected statistical approach – use correlation, regression, causal inference, etc.?
 
+
+
+
+### Christian's Feedback (Summary & Clarification)
+
+Christian emphasized the importance of **simplifying the modeling approach** today (14.03), to ensure feasibility and clarity for the bachelor thesis. He specifically advised **against using complex agent-based modeling (ABM)**, as explicitly modeling individual passenger movements—including return journeys, such as travelers flying from Frankfurt and subsequently returning home—would introduce substantial complexity beyond the thesis scope.
+
+Instead, Christian recommended a more streamlined approach, employing a network-based SIR model similar to Brockmann & Helbing (2013), structured as follows:
+
+- **Nodes represent airports or national-level aggregates**, serving as the core spatial units of analysis.
+- **Edges reflect aggregated daily passenger flows** between nodes. These flows are calculated by multiplying **seat capacity by passenger load factors**, acting as simplified approximations of true passenger numbers.
+- **Daily passenger volumes** become the primary drivers of infection intensity within each node, analogous to treating airports as interconnected nodes or junctions linked by pipelines. This way, higher passenger volumes translate into stronger transmission potential or larger "pipelines."
+- Each airport’s daily infection rate is then determined by these incoming aggregated passenger flows rather than explicit tracking of individual passengers.
+
+This approach effectively simplifies the model by transforming complex individual travel patterns into manageable aggregated flows, enhancing feasibility while preserving the critical aspects needed to test my hypothesis. Therefore, I maintain a clear, feasible model that accurately captures key epidemic spread dynamics without being overwhelmed by unmanageable computational complexity.
+
+In summary:
+
+- **Nodes:** Airports or country-level nodes.
+- **Edges:** Daily aggregated passenger numbers (based on seat capacity × load factor).
+- **Infection Dynamics:** Driven by incoming passenger volume per node, using differential equations for each day and node.
+
+- Also, I need something to make it more pop at the beginning
+
+- Nodes (airports) + edges (passenger flow) + infection dynamics over time.
+- Simple graph visual showing high-traffic nodes (Paris, London, Frankfurt) vs. low-traffic nodes.
+- Maybe an epidemic spread animation later in the results? (even if basic) .. or a static map *Sankey diagram showing passenger flows between major European hubs) ! -> Before diving into the SIR Model!
+
+## Conclusion ? [Needs tone of work]
+
+We hypothesize that early epidemic seeding systematically increased excess mortality by:
+- Limiting early interventions—Governments had less time to implement non-pharmaceutical measures (NPIs).
+- Prolonging exposure—Early-hit regions faced multiple waves before vaccines were available.
+- Worsening disparities—Healthcare systems with fewer resources struggled more over extended outbreaks.
+
+To test this, we:
+- Smulate epidemic spread using an ODE-based SIR model on a Global Mobility Network (GMN).
+- Estimate epidemic arrival ranks across European countries.
+- Correlate early arrival with excess mortality & socioeconomic indicators.
+
+
+## Subchapter Structure for Thesis
+
+- Introduction (Introducing the problem, research questions, and why this matters.)
+- Literature Review 
+  - Establishing a scientific basis for the study, summarizing key findings, and identifying gaps. - Network Epidemiology and SIR Models (Classical SIR Models -> Network based -> Applications to flight networks and pandemics
+  - COVID-19 & Global Mobility Networks (GMN) (Early studies on aviation-driven spread [@chinazzi2020; @sun2022_a] - Excess mortality: What drives national differences?)
+  - Data Challenges in Flight-Based Epidemiology - ADS-B Data (Coverage & Bias) - Passenger vs. Seat-Capacity Issues - Ghost Flights & Data Uncertainty
+- Methodology (Explain tools, data, models, and statistical methods used.)
+  - Data Sources and Feasibility Challenges
+  - Model Implementation (SIR or SEIR)
+  - Simulation Steps (ODEs, parameter choices, etc.)
+- Data Sources and Feasibility Challenges
+- Result and Analysis
+- Discussion - Does Early Arrival Matter for COVID-19 Outcomes? - How Do Data Biases Affect Model Reliability?
+  - Limitations & Future Work
+    - Missing Data & Passenger Uncertainty
+    - Expanding beyond Europe
+    - Alternative modeling approaches (SEIR, Agent-Based Models)
+
+- Conclusion - Summarizing key takeaways and implications for future research. without repeating the Discussion.
+- Ref (APA!)
 ## References
 
 ::: {#refs}
