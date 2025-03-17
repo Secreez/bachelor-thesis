@@ -34,16 +34,55 @@ format:
 
 ## Introduction
 
+### Context & Motivation
 
-## Background
+### Research questions & Objectives
 
-## Data & Methods {#sec-data-methods}
+### Thesis Outline
+
+## Literature Review
+
+### Network Epidemiology & SIR Models
+
+### COVID-19 & Global Mobility Networks (GMN)
+
+### Data Challenges in Flight-Based Epidemiology
+
+## Methodology
+
+### Data Sources & Feasibility
+
+### Model Implementation
+
+### Simulation Steps & Parameter CHoices
+
+### Statistical / Correlation Analysis
+
+## Results & Analysis
+
+### Simulation Outcomes
+
+### Comparison to Real Data
+
+### Excess Mortality Correlation
+
+## Discussion
+
+### Did Early Arrival Matter?
+
+### Model Reliability & Data Biases
+
+### Limitations & Future Work
 
 ## Conclusion
 
-## Acknowledgements
+### Major Takeaways
 
-## References {.unnumbered}
+### Practical Implications
+
+### Final Thoughts
+
+## References
 
 ::: {#refs}
 :::

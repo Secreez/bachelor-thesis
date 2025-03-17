@@ -37,7 +37,7 @@ As outlined in the Z_GIS Thesis Blog by [@neuwirth2024], the **hypothesis** stat
 
 Accordingly, **early epidemic arrival** is expected to correlate with **higher prevalence, reproduction rates, and excess mortality** at the national level.  
 
-To test this hypothesis, the proposed approach followed five key steps:  
+To test this hypothesis, the initial approach suggested by [@neuwirth2024] (which I will evaluate and refine in subsequent sections) followed five key steps:
 
 1. **Construct a Global Mobility Network (GMN)** using worldwide air travel data from early 2020 (**OpenSky COVID-19 Flight Dataset and/or FlightRadar24 API**) to represent the situation at the outbreak’s onset.  
 2. **Implement a SIR network simulation model** as presented by [@brockmann2013].  
@@ -89,7 +89,7 @@ However, as @salgas2024 emphasize, building a global flight network by merging *
 
 *Therefore, while the Wikipedia + XGBoost approach is innovative, its high labor overhead may exceed the scope of a short-term research project.*
 
-### Seats vs. Actual Passengers [Check next!]
+### Seats vs. Actual Passengers
 
 Because most **open flight datasets** (e.g., OpenSky, ADS-B Exchange) and even official schedules **lack passenger load factors** or manifests, **researchers in the past usually approximated** the number of travelers by **multiplying seat capacity by an assumed occupancy**. 
 
@@ -99,6 +99,10 @@ Pre-pandemic, global passenger load factors (PLF) reached a record 82.6% in 2019
 - **Reduced Occupancy and Ghost Flights.** During COVID-19, many flights operated with extremely low passenger loads (so-called "ghost flights"), often to maintain airport slot rights or for crew recertification [@sun2022_b]. These flights challenge standard seat-capacity methods, as using pre-pandemic load factors could significantly overestimate actual mobility. While industry-wide load factors reflect averages, individual routes often had near-empty flights, complicating large-scale modeling.
 
 *In practice, this “seat capacity × load factor” approximation remains the most feasible for large-scale modeling—though it risks both under- and overestimation of true passenger volumes.*
+
+Accordingly, in our model, we will estimate passenger flows by multiplying seat capacity by a load factor, despite acknowledging the margin of error introduced by ghost flights and untracked cargo operations.
+
+!!! needs a read: https://www.mdpi.com/2504-3110/8/4/214
 
 ### Are Passengers “Isolated” in Transit? How does this affect the model?
 
@@ -111,7 +115,7 @@ Hence, in a **network contagion** view, flights function as **routes** that let 
 
 *In sum, large-scale SIR models typically focus on inter-node transmission, treating in-flight events as a single jump rather than a site of active spread.*
 
-![Expand for Eurocontrol and important finding! Extremely promising for European-centric studies] ! ... + OpenSky in combination. ! or further below.
+![Expand for Eurocontrol and important finding! Extremely promising for European-centric studies] ! ... + OpenSky in combination. 
 
 ## Rationale and Potential Approaches for Future Research
 
@@ -119,93 +123,72 @@ Hence, in a **network contagion** view, flights function as **routes** that let 
 
 Owing to open-data limitations, one option is to **narrow** the project scope to a region with better coverage (e.g., **Europe**) [@suzumura2020; @iacus2020]. Even a Europe-centric GMN could test the early-arrival hypothesis among multiple countries. Conversely, an **approximate** global network might accept substantial data gaps—particularly in Asia—or employ **Wikipedia + XGBoost** to fill known voids [@salgas2024]. Either path allows for constructing at least a partial flight network to assess epidemic arrival times.
 
-### SIR (or SEIR) Model Implementation
+Importantly, spatial contagion also occurs within countries. As shown by [@laroze2020], intra-country commuter flows—in their case, between English local authority districts—can substantially influence how quickly an infection travels after an initial seeding event. This underscores that a regional approach to modeling should account not only for international flights but also for domestic or subregional connectivity, especially if multiple lockdown phases or mobility restrictions are introduced.
 
-Following [@brockmann2013], a **network-based SIR** model can be used to estimate arrival times for each country/node, treating flight routes as edges along which the infection travels. If direct data on Wuhan flights is lacking, one might approximate initial seeding from other major Asian hubs (e.g., Hong Kong, Seoul, Tokyo) using ADS-B data. The resulting predicted first-case arrivals can be compared against reported seeding events, aligning with studies that highlight the role of population movement in virus transmission [@lai2020].
+Consequently, this thesis will adopt a Europe-centric approach, where data coverage is denser and more consistently available via Eurocontrol. This targeted scope helps mitigate the coverage gaps and high subscription costs associated with global-scale flight data.
 
-For a more detailed incubation-lag analysis, one could instead use an SEIR framework, as described by [@abou2020]. This model adds an Exposed (E) compartment for individuals who are infected but not yet infectious. This extra compartment accounts for incubation periods and can yield more realistic dynamics for diseases like COVID-19. However, it also adds complexity—more parameters to estimate and a lengthier calibration process. Given the scope of my bachelor thesis, the simpler SIR approach may suffice to derive approximate arrival times, but future work could adopt SEIR for a more detailed incubation-lag analysis.
+The next section details how we will integrate European flight data sources, such as Eurocontrol, into a network-based SIR model, and subsequently correlate early arrival ranks with excess mortality metrics.
+
+### SIR as a Model Implementation
+
+@chinazzi2020 demonstrated that, following Wuhan’s travel ban, major airports like Shanghai, Beijing, and Shenzhen took on a significantly larger role in exporting cases internationally. Therefore, if direct Wuhan flight data are missing, these alternative hubs can serve as a proxy to capture the majority of early seeding events. Thus, we approximate initial seeding from these alternate airports to capture the bulk of inbound flights. The resulting predicted first-case arrivals can be compared against reported seeding events, aligning with studies that highlight the role of population movement in virus transmission [@lai2020].
+
+For a more detailed incubation-lag analysis, one could adopt an **SEIR** framework (or its multi-stage variant, **SEnIR**) that more accurately captures a **Gamma-like** incubation-time distribution [@abou2020]. Indeed, [@rozan2024] show that using a realistic (non-exponential) distribution for the exposed period can substantially change predictions about epidemic peaks, timing, and overall infection counts. While these approaches yield more nuanced results, they require additional parameters (e.g., number of subcompartments, shape parameters for the Gamma distribution) and more extensive calibration, as well as more complex agent-based simulations if applied at the individual level [@rozan2024]. **@brockmann2013 justify a simpler, mean-rate SIR formulation for influenza-like diseases, noting that a single average recovery parameter (i.e., $B^-1$ in their depiction of influenza-like diseases often captures core dynamics sufficiently.** Given the scope of this bachelor thesis, the simpler **SIR** model may suffice to approximate arrival times, but future work could incorporate the **SEnIR** approach for a more robust treatment of incubation periods.
 
 ### Excess Mortality Correlation
 
 Finally, these **arrival-time estimates** can be matched with **excess mortality** and socioeconomic factors—like GDP, median age, vaccination rates, and healthcare quality—to assess whether **early arrival** persists as a significant predictor after accounting for other variables [@sun2022_a; @chinazzi2020]. A **recent short communication** (Neuwirth et al., in preparation) compiles 59 countries’ mortality and demographic data into a single dataset that could serve as the basis for such a correlation analysis. Even a region-specific approach (e.g., Europe-only) can yield valuable insights into the role of arrival timing in national outcomes.
 
-# Refinement of Research Design and Methodology
 
-[Not done yet, just a placeholder]
+##  Advanced Research Question & Hypothesis
 
-Based on this evaluation, my refined approach will prioritize
+**Research Question**  
+> Does earlier epidemic arrival (seeding) in European countries systematically correlate with higher COVID-19–associated excess mortality, even after accounting for socioeconomic factors?
 
-- European Centric GMN Construction
-- SIR Model Implementation
-- Weighted Nodes with more Traffic Data (Paris, London, Frankfurt, Amsterdam, Madrid, Rome, etc.)
-- Excess Mortality Correlation for European Countries
-- Use of Data: OpenSky, EUROCONTROL (! Extremely promising, further research ongoing, still need Acception of EUROCONTROL), certain Covid-19 datasets
-- Refining the Research Design Section
-- Finalizing the Methods (ODE details, parameter choices, simulation steps) - ODE LaTeX equations ..
-- Clarifying the expected statistical approach – use correlation, regression, causal inference, etc.?
+**Hypothesis**  
 
+We hypothesize that early epidemic seeding systematically increases excess mortality by:  
+- Limiting early interventions (less time for NPIs)  
+- Prolonging exposure (facing multiple waves before vaccines)  
+- Worsening disparities (overburdening resource-poor healthcare systems)
 
+Consequently, this hypothesis suggests that countries seeded earlier in the outbreak will exhibit **significantly higher** excess mortality rates, controlling for confounders such as GDP, healthcare capacity, and vaccination rates.
 
+## Data Feasibility and Coverage
 
-### Christian's Feedback (Summary & Clarification)
+(see above)
 
-Christian emphasized the importance of **simplifying the modeling approach** today (14.03), to ensure feasibility and clarity for the bachelor thesis. He specifically advised **against using complex agent-based modeling (ABM)**, as explicitly modeling individual passenger movements—including return journeys, such as travelers flying from Frankfurt and subsequently returning home—would introduce substantial complexity beyond the thesis scope.
+## Research Design and Methodology
 
-Instead, Christian recommended a more streamlined approach, employing a network-based SIR model similar to Brockmann & Helbing (2013), structured as follows:
+Following the data feasibility evaluation and in alignment with my **Supervisor’s advice (March 14, 2025)**, I will **avoid** complex agent-based modeling (ABM) in which individual passenger routes and return journeys are explicitly tracked. Instead, I will **focus on a streamlined network-based SIR model**, akin to [@brockmann2013], for the following reasons:
 
-- **Nodes represent airports or national-level aggregates**, serving as the core spatial units of analysis.
-- **Edges reflect aggregated daily passenger flows** between nodes. These flows are calculated by multiplying **seat capacity by passenger load factors**, acting as simplified approximations of true passenger numbers.
-- **Daily passenger volumes** become the primary drivers of infection intensity within each node, analogous to treating airports as interconnected nodes or junctions linked by pipelines. This way, higher passenger volumes translate into stronger transmission potential or larger "pipelines."
-- Each airport’s daily infection rate is then determined by these incoming aggregated passenger flows rather than explicit tracking of individual passengers.
+- **Feasibility**: ABM introduces excessive complexity for real-world flight data—beyond the scope and timeline of a bachelor’s thesis.  
+- **Aggregated Flows**: Representing airports (or countries) as **nodes** with passenger flows (seat capacity × load factor) as **edges** keeps the model tractable.  
+- **Core Dynamics Preserved**: Even without individual-level detail, this approach maintains the main elements needed to study **early seeding** and **excess mortality** correlations.
 
-This approach effectively simplifies the model by transforming complex individual travel patterns into manageable aggregated flows, enhancing feasibility while preserving the critical aspects needed to test my hypothesis. Therefore, I maintain a clear, feasible model that accurately captures key epidemic spread dynamics without being overwhelmed by unmanageable computational complexity.
+### Specific Steps
 
-In summary:
+1. **Construct a Europe-Centric Global Mobility Network (GMN)**  
+   - Include as many European airports as **data availability** allows (using Datasets: OpenSky, Eurocontrol, ICAO).  
+   - If coverage or time constraints require a subset, **prioritize major hubs** (e.g., Paris, London, Frankfurt) that capture the bulk of passenger traffic.  
+   - Represent edges as **aggregated daily passenger flows** based on seat capacity × load factors. (We acknowledge possible overestimates due to cargo or ghost flights, but this approach remains the most feasible for large-scale coverage.)
 
-- **Nodes:** Airports or country-level nodes.
-- **Edges:** Daily aggregated passenger numbers (based on seat capacity × load factor).
-- **Infection Dynamics:** Driven by incoming passenger volume per node, using differential equations for each day and node.
+2. **Implement an ODE-Based SIR Framework**  
+   - Use **standard** SIR compartments: Susceptible (S), Infected (I), and Recovered (R), with slight adjustment based on study.
+   - Model each airport as a **node** with daily updates to SIR via differential equations. 
+   - If possible, seed from Wuhan (or the earliest identified external source ~ if Eurocontrol access) by linking arrival flights into Europe; if coverage is sparse, approximate arrival points.
 
-- Also, I need something to make it more pop at the beginning
+3. **Determine “Arrival Times” for Each Node**  
+   - **Arrival time** = the simulation day an airport’s infected fraction exceeds a small threshold (e.g., 1 or 5 infected individuals).  
+   - **Aggregate** node-level arrivals to the **country** level—either by earliest arrival among a country’s airports or a weighted average.
 
-- Nodes (airports) + edges (passenger flow) + infection dynamics over time.
-- Simple graph visual showing high-traffic nodes (Paris, London, Frankfurt) vs. low-traffic nodes.
-- Maybe an epidemic spread animation later in the results? (even if basic) .. or a static map *Sankey diagram showing passenger flows between major European hubs) ! -> Before diving into the SIR Model!
-- https://www.sciencedirect.com/science/article/pii/S0277953620308741 next paper to read about Spatial contagion among local authority: "COVID-19 does not stop at open borders: Spatial contagion among local authority districts during England's first wave"
-## Conclusion ? [Needs tone of work]
+4. **Rank Countries by Their Estimated Arrival Time**  
+   - Sort countries from earliest to latest.  
+   - This ranking captures **how quickly** an epidemic seeds each location.
 
-We hypothesize that early epidemic seeding systematically increased excess mortality by:
-- Limiting early interventions—Governments had less time to implement non-pharmaceutical measures (NPIs).
-- Prolonging exposure—Early-hit regions faced multiple waves before vaccines were available.
-- Worsening disparities—Healthcare systems with fewer resources struggled more over extended outbreaks.
-
-To test this, we:
-- Smulate epidemic spread using an ODE-based SIR model on a Global Mobility Network (GMN).
-- Estimate epidemic arrival ranks across European countries.
-- Correlate early arrival with excess mortality & socioeconomic indicators.
-
-
-## Subchapter Structure for Thesis
-
-- Introduction (Introducing the problem, research questions, and why this matters.)
-- Literature Review 
-  - Establishing a scientific basis for the study, summarizing key findings, and identifying gaps. - Network Epidemiology and SIR Models (Classical SIR Models -> Network based -> Applications to flight networks and pandemics
-  - COVID-19 & Global Mobility Networks (GMN) (Early studies on aviation-driven spread [@chinazzi2020; @sun2022_a] - Excess mortality: What drives national differences?)
-  - Data Challenges in Flight-Based Epidemiology - ADS-B Data (Coverage & Bias) - Passenger vs. Seat-Capacity Issues - Ghost Flights & Data Uncertainty
-- Methodology (Explain tools, data, models, and statistical methods used.)
-  - Data Sources and Feasibility Challenges
-  - Model Implementation (SIR or SEIR)
-  - Simulation Steps (ODEs, parameter choices, etc.)
-- Data Sources and Feasibility Challenges
-- Result and Analysis
-- Discussion - Does Early Arrival Matter for COVID-19 Outcomes? - How Do Data Biases Affect Model Reliability?
-  - Limitations & Future Work
-    - Missing Data & Passenger Uncertainty
-    - Expanding beyond Europe
-    - Alternative modeling approaches (SEIR, Agent-Based Models)
-
-- Conclusion - Summarizing key takeaways and implications for future research. without repeating the Discussion.
-- Ref (APA!)
+5. **Correlate Modeled Arrival Times with Excess Mortality & Socioeconomic Indicators**  
+   - At the country level, compare arrival ranks to data on **excess mortality**, GDP, vaccination rates, and healthcare capacity.  
+   - Evaluate whether earlier seeding correlates with higher mortality (even after controlling for other variables).
 
 ## References
 
