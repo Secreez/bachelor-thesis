@@ -135,6 +135,28 @@ The next section details how we will integrate European flight data sources, suc
 
 For a more detailed incubation-lag analysis, one could adopt an **SEIR** framework (or its multi-stage variant, **SEnIR**) that more accurately captures a **Gamma-like** incubation-time distribution [@abou2020]. Indeed, [@rozan2024] show that using a realistic (non-exponential) distribution for the exposed period can substantially change predictions about epidemic peaks, timing, and overall infection counts. While these approaches yield more nuanced results, they require additional parameters (e.g., number of subcompartments, shape parameters for the Gamma distribution) and more extensive calibration, as well as more complex agent-based simulations if applied at the individual level [@rozan2024]. **@brockmann2013 justify a simpler, mean-rate SIR formulation for influenza-like diseases, noting that a single average recovery parameter (i.e., $B^-1$ in their depiction of influenza-like diseases often captures core dynamics sufficiently.** Given the scope of this bachelor thesis, the simpler **SIR** model may suffice to approximate arrival times, but future work could incorporate the **SEnIR** approach for a more robust treatment of incubation periods.
 
+## Eurocontrol Data
+
+Many providers of flight movement data (e.g., FR24, OpenSky, ADS-B Exchange) rely heavily on **crowdsourced ADS-B** signals, leading to uneven coverage and potential biases in areas with fewer ADS-B receivers. By contrast, **Eurocontrol** obtains **flight plans and updates for all IFR** (Instrument Flight Rules) flights in European airspace, merging them with radar and other ANSP sources to create a more centralized, **operational** picture of traffic.
+
+### Access & Terms of Service
+- Eurocontrol offers an **R&D Platform** for non-commercial, research-focused work—requiring **registration** and acceptance of their Terms of Service (TOS).  
+- Users **cannot share** the raw ATM Dataset publicly, but may publish **aggregated** or **derived** results (e.g., charts, Sankey diagrams) as long as Eurocontrol is properly **acknowledged**.  
+- I have received **personal access** to this dataset for this bachelor’s thesis, strictly for **research** activities.
+
+### Data Availability & Format
+- **Four sample months per year**: March, June, September, December.  
+- **Commercial flights only** (flight type `S` (scheduled) or `N` (non-scheduled fligt)), excluding general aviation and military.  
+- **Flight-level details**: Schedules, actual off-block/landing times, aircraft type (ICAO 8643), operator (ICAO 8585), route segments (waypoints), and relevant airspace data (updated each AIRAC cycle).  
+- Because coverage is **limited** to four months annually, additional periods must be approximated—**OpenSky** or other data sources may supplement missing routes or months.
+
+**Metadata & TOS**: See [EUROCONTROL ATM R&D Datasets – Terms of Use](https://www.eurocontrol.int/publication/eurocontrol-atm-rd-datasets-terms-use) for further details on licensing and data fields. All usage here adheres to **non-commercial** research and disallows distribution of raw data.
+
+
+### Combining with OpenSky  
+To fill temporal or regional gaps outside the four Eurocontrol months, this thesis will also leverage **OpenSky** crowdsourced ADS-B data. While OpenSky may have coverage limitations, especially in certain parts of Asia or Africa, its **continuous** temporal availability complements the **Eurocontrol** snapshot months—thereby constructing a more complete Europe-centric dataset for the SIR modeling.
+
+
 ### Excess Mortality Correlation
 
 Finally, these **arrival-time estimates** can be matched with **excess mortality** and socioeconomic factors—like GDP, median age, vaccination rates, and healthcare quality—to assess whether **early arrival** persists as a significant predictor after accounting for other variables [@sun2022_a; @chinazzi2020]. A **recent short communication** (Neuwirth et al., in preparation) compiles 59 countries’ mortality and demographic data into a single dataset that could serve as the basis for such a correlation analysis. Even a region-specific approach (e.g., Europe-only) can yield valuable insights into the role of arrival timing in national outcomes.
@@ -169,7 +191,7 @@ Following the data feasibility evaluation and in alignment with my **Supervisor�
 ### Specific Steps
 
 1. **Construct a Europe-Centric Global Mobility Network (GMN)**  
-   - Include as many European airports as **data availability** allows (using Datasets: OpenSky, Eurocontrol, ICAO).  
+   - Include as many European airports as **data availability** allows (using Datasets: OpenSky, @eurocontrolData2025, ICAO).  
    - If coverage or time constraints require a subset, **prioritize major hubs** (e.g., Paris, London, Frankfurt) that capture the bulk of passenger traffic.  
    - Represent edges as **aggregated daily passenger flows** based on seat capacity × load factors. (We acknowledge possible overestimates due to cargo or ghost flights, but this approach remains the most feasible for large-scale coverage.)
 

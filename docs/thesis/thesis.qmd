@@ -31,6 +31,15 @@ format:
     toc-depth: 3
 ---
 
+## Acknowledgments
+
+Based on TOS:
+
+“This thesis includes results derived from the ATM Datasets made available by EUROCONTROL (©2025). EUROCONTROL does not necessarily endorse or support the conclusions drawn herein and shall not be liable for any direct or indirect damages arising out of or in connection with this work.”
+
+And for Figures for example: "Figure 1. Sankey diagram of daily passenger flows (April 2020) among selected European airports. Source: @eurocontrolData2025."
+
+
 
 ## Introduction
 
