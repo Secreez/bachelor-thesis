@@ -156,15 +156,17 @@ Many providers of flight movement data (e.g., FR24, OpenSky, ADS-B Exchange) rel
 
 
 ### Combining with OpenSky  
-To fill temporal or regional gaps outside the four Eurocontrol months, this thesis will also leverage **OpenSky** crowdsourced ADS-B data, more specifically, "Crowdsourced air traffic data from The OpenSky Network 2020" from @olive2023. While OpenSky may have coverage limitations, especially in certain parts of Asia or Africa, its **continuous** temporal availability complements the **Eurocontrol** snapshot months—thereby constructing a more complete Europe-centric dataset for the SIR modeling.
+To fill temporal or regional gaps outside the four Eurocontrol months, this thesis will also leverage **OpenSky** crowdsourced ADS-B data, more specifically, "Crowdsourced air traffic data from The OpenSky Network 2020" from @olive2023. While OpenSky may have coverage limitations, especially in certain parts of Asia or Africa, its **continuous** temporal availability complements the **Eurocontrol** snapshot months—thereby constructing a Eurocontrol Membered dataset for the SIR modeling.
+
+
 
 ### Modeling Europe’s Initial Wave and Time Windows
 
-While **sporadic** COVID-19 cases may have circulated in Europe as early as **December 2019**, retrospective analyses suggest that **SARS-CoV-2 was present in France before its official recognition** (Deslandes et al., 2020). Epidemiological models further indicate that **major seeding** likely occurred between **January and February 2020**, primarily through **air travel from China and other Asian hubs** (Chinazzi et al., 2020). 
+While **sporadic** COVID-19 cases may have circulated in Europe as early as **December 2019**, retrospective analyses suggest that **SARS-CoV-2 was present in France before its official recognition** (Deslandes et al., 2020). Epidemiological models further indicate that **major seeding** likely occurred between **January and February 2020**, primarily through **air travel from China** (@chinazzi2020). 
 
 However, **gradual travel restrictions** were implemented as the outbreak progressed:
 
-- **January 23, 2020:** Wuhan imposed an **internal lockdown**, yet **international travel continued**, allowing undetected carriers to reach global hubs (World Health Organization, 2020).  
+- **January 23, 2020:** Wuhan imposed an **internal lockdown**, yet **international travel continued**, allowing undetected carriers to reach global hubs (SOURCE).  
 
 - **Late January–Early February 2020:** Multiple countries, including the **U.S. and Australia**, introduced **travel bans for direct flights** from China, but **indirect routes via major transit hubs remained open** (SOURCE!). 
 
@@ -185,21 +187,24 @@ Since **Eurocontrol flight data** is only available for **fixed quarterly months
 
 After estimating arrival times per country, these values will be correlated with **excess mortality** and key socioeconomic indicators—**GDP, median age, and healthcare quality**—to evaluate whether **early seeding systematically increased mortality after adjusting for confounders** (Sun et al., 2022; Chinazzi et al., 2020).  
 
-A **recent short communication** (Neuwirth et al., in preparation) compiles **excess mortality data from 59 countries**, providing a robust empirical foundation for such an analysis. Even a **Europe-focused study** can yield valuable insights into how **early arrival shaped national outcomes**, contributing to a broader understanding of pandemic dynamics.  
-
+A **recent short communication** (Neuwirth et al., in preparation) compiles **excess mortality data from x countries**, providing a robust empirical foundation for such an analysis. Therefore, even a **Europe-focused study** can yield valuable insights into how **early arrival shaped national outcomes**, contributing to a broader understanding of pandemic dynamics.  
 
 ## Advanced Research Question & Hypothesis
 
 **Research Question**  
-> Does earlier epidemic arrival correlate with higher excess mortality in Europe during the first wave (March–June 2020), even after accounting for socioeconomic factors?
+> Does the timing of epidemic seeding—derived from integrated air traffic data (OpenSky for January–February and April–May, and Eurocontrol for March and June 2020)—correlate with higher excess mortality in Europe during the first wave, even after accounting for key socioeconomic factors?
 
 **Hypothesis**  
+We hypothesize that **countries experiencing earlier epidemic seeding**, as inferred from our integrated flight network analysis over January–June 2020, will exhibit **higher first-wave excess mortality**. This association is expected to persist even after controlling for critical socioeconomic factors such as GDP, UHC, and median age. We anticipate that this relationship is driven by:
 
-We hypothesize that **earlier epidemic seeding**, as determined by our flight network analysis, systematically correlates with **higher first-wave excess mortality** in Europe. This association is expected to be driven by:  
+- **Shorter reaction times for interventions:**  
+  Countries seeded earlier had less time to implement effective non-pharmaceutical interventions (NPIs), allowing for more rapid viral spread.
 
-- **Shorter reaction times for interventions:** Countries with earlier seeding had less time to implement effective non-pharmaceutical interventions (NPIs), resulting in more rapid initial spread.  
-- **Initial caseload surges overwhelming healthcare systems:** Regions with limited healthcare capacity experienced early surges that strained resources and contributed to higher mortality.  
-- **Higher risk exposure in densely populated transit hubs:** Major airports (e.g., Frankfurt, Paris, London) serve as key nodes in the air traffic network, and their high passenger volumes accelerate the spread of infection.
+- **Overwhelmed healthcare systems:**  
+  Regions with limited healthcare capacity experienced early surges that strained resources, contributing to elevated mortality.
+
+- **Higher risk exposure in densely connected transit hubs:**  
+  Major airports (e.g., Frankfurt, Paris, London) serve as critical nodes with high passenger volumes. The greater the number of inbound flights, the higher the likelihood of rapid epidemic seeding and subsequent spread. Our integrated approach, combining continuous OpenSky data and Eurocontrol snapshots, will capture these dynamics over the early pandemic period.
 
 
 ## Data Feasibility and Coverage
@@ -226,24 +231,26 @@ Following the data feasibility evaluation and in alignment with my **Supervisor�
 2. **Implement an ODE-Based SIR Framework**  
    - Use **standard** SIR compartments: Susceptible (S), Infected (I), and Recovered (R).
    - Model each airport as a **node** with daily updates via differential equations.
-   - For seeding, rather than relying solely on Wuhan data, the model will incorporate **inbound flight data from a range of major Chinese airports** (e.g., Wuhan, Shanghai, Beijing, Shenzhen).  
+   - For seeding, rather than relying solely on data from Wuhan, the model will incorporate inbound flight data from a range of Chinese airports. This strategy is particularly justified given Wuhan’s role as a critical transportation hub—its extensive internal connectivity facilitates rapid movement across China @zhang2020.
      - This approach is justified by [@chinazzi2020], who demonstrated that after Wuhan’s travel ban on 23 January 2020, airports such as Shanghai, Beijing, and Shenzhen significantly contributed to international case exportation.
      - Thus, by using the earliest available inbound flight data from these hubs, we approximate the initial seeding events that likely occurred in January–February 2020.
    - If direct data is sparse for any specific airport, arrival points may be approximated using alternative methods.
 
-
-3. **Determine “Arrival Times” for Each Node**
-   - Define **arrival time** as the simulation day when an airport’s infected fraction exceeds a small threshold (e.g., 1 or 5 infected individuals).
+3. **Determine “Arrival Times” for Each Node**  
+   - Define **arrival time** as the simulation day when an airport’s infected fraction exceeds a small threshold (e.g., 1 or 5 infected individuals).  
    - **Aggregate node-level arrival times to the country level**—either by taking the earliest arrival among all airports in a country or by computing a weighted average based on passenger volumes.
 
-4. **Rank Countries by Their Estimated Arrival Time**
+4. **Rank Countries by Their Estimated Arrival Time**  
    - Sort countries from earliest to latest based on the aggregated arrival times. This ranking will capture **how quickly** an epidemic seeds each location.
 
-5. **Correlate Modeled Arrival Times with Excess Mortality & Socioeconomic Indicators**
-   - At the country level, compare the estimated arrival ranks with data on **excess mortality**, GDP, healthcare capacity, population density, and median age.
-   - Evaluate whether earlier seeding correlates with higher mortality, even after controlling for these confounding factors.
+5. **Correlate Modeled Arrival Times with Excess Mortality & Socioeconomic Indicators**  
+   - At the country level, compare the estimated arrival ranks with data on **excess mortality**, GDP, healthcare capacity (e.g., measured via the UHC Coverage Index), and median age.  
+   - Evaluate whether earlier seeding correlates with higher mortality, even after controlling for these confounding factors.  
+   - Note that factors such as vaccination rates are not included in this analysis, as the focus is on the early phase of the pandemic.
 
-Important Paper to note: https://www.sciencedirect.com/science/article/pii/S0967070X22002207
+Important Paper to note: [https://www.sciencedirect.com/science/article/pii/S0967070X22002207](https://www.sciencedirect.com/science/article/pii/S0967070X22002207)
+
+- Maybe need to dtone it down a bit.. but shwocase. that Wuhan solely is NOT the right way to go. 
 
 ## References
 
